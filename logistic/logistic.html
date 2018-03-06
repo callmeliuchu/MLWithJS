@@ -6,15 +6,16 @@
 <body>
 <canvas id="canvas"></canvas>
 </body>
+<script type="text/javascript" src="./logistic.js"></script>
 <script type="text/javascript">
-     function getRandColor(){
+    function getRandColor(){
        var colorList = [
        '#C1232B','#B5C334','#FCCE10','#E87C25','#27727B',
        '#FE8463','#9BCA63','#FAD860','#F3A43B','#60C0DD',
        '#D7504B','#C6E579','#F4E001','#F0805A','#26C0C0'
        ];
         return  colorList[Math.floor((Math.random()*colorList.length))];
-     }
+    }
     class Point{
     	constructor(x,y){
     		this.x = x
@@ -113,12 +114,31 @@
      		this.z_y = oldScale_height/this.scale.height    		
      	}
      	convertLocation(x,y){
-     		return {x:x*this.z_x,y:y*this.z_y}
+     		return {x:(x+this.centerLocation.x)*this.z_x,y:(this.centerLocation.y-y)*this.z_y}
      	}
-     	drawCycle(cycle){
-     		let new_loc = this.convertLocation(cycle.x+this.centerLocation.x,this.centerLocation.y-cycle.y)
-     		this.drawTool.drawCycleByFillingColor(new_loc.x,new_loc.y,cycle.radius)
+        convertP(p){
+            return this.convertLocation(p.x,p.y)
+        }
+     	drawCycle(cycle,color='#0000ff'){
+     		let new_loc = this.convertLocation(cycle.x,cycle.y)
+     		this.drawTool.drawCycleByFillingColor(new_loc.x,new_loc.y,cycle.radius,color)
      	}
+        drawLine(p1,p2,color){
+            let new_p1 = this.convertLocation(p1.x,p1.y)
+            let new_p2 = this.convertLocation(p2.x,p2.y)
+            this.drawTool.drawLine(new_p1,new_p2,color)
+        }
+        drawLineByFunction(min_x,max_x,weights,color){
+            let p1 = {x:min_x,y:this.cal_y(weights,min_x)}
+            let p2 = {x:max_x,y:this.cal_y(weights,max_x)}
+            this.drawLine(p1,p2);
+        }
+        cal_y(weights,x){
+            return -(weights[1]/weights[2])*x -(weights[0]/weights[2])
+        }
+        clear(){
+            this.drawTool.clear()
+        }
      }
 
      class Box{
@@ -130,15 +150,35 @@
      		return {x:this.width/2,y:this.height/2}
      	}
      }
-
-
      const canvas = document.getElementById('canvas')
      const ctx = canvas.getContext("2d")
      drawTool = new DrawTool(canvas,ctx)
      drawTool.init(800,600)
-     const box = new Box(800,600)
+     const data = new TwoDData(dataMat)
+     const box = new Box(data.range.x_range,data.range.y_range)
+     const res = logistic(dataMat1,labels)
      const newDrawTool = new NewDrawTool(drawTool,box)
-     newDrawTool.drawCycle(new Cycle(200,200,10))
+     const drawPic = (newDrawTool,data,weights) => {
+         newDrawTool.drawLineByFunction(data.min_x,data.max_x,weights.arr,'#C6E579')
+         for(let i=0;i<data.n;i++){
+           let obj = data.getDot(i)
+           let label = obj.label
+           let color = "#FCCE10"
+           if(label == 0){
+               color = "#26C0C0"
+           }
+           newDrawTool.drawCycle(new Cycle(obj.loc[0],obj.loc[1],2.5),color) 
+         }
+     }
+     let index = 0
+     setInterval(()=>{
+        newDrawTool.clear()
+        newDrawTool.initCanvas()
+       drawPic(newDrawTool,data,res[index++])
+     },100);
+     
+
+
      // const cycle = new Cycle(400,300,10)
      // drawTool.drawCycle(cycle)
 </script>
