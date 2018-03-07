@@ -125,8 +125,8 @@ const logistic = (dataMat,labels,iteratorNum=200)=>{
 	     	let error = labels[i] - sigmoid(vec.dot(weights))
 	     	let alpha = 1/(1+i+j) + 0.01
 	     	weights = weights.plus(vec.multiplyNum(error*alpha))
-	     	res.push(weights)
-	      }    	
+	      }  
+	      res.push(weights)  	
      }
      return res
 }

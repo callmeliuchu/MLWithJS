@@ -6,7 +6,7 @@
 <body>
 <canvas id="canvas"></canvas>
 </body>
-<script type="text/javascript" src="./logistic.js"></script>
+<script type="text/javascript" src="./kmeans.js"></script>
 <script type="text/javascript">
     function getRandColor(){
        var colorList = [
@@ -156,29 +156,14 @@
      drawTool.init(1200,800)
      const data = new TwoDData(dataMat)
      const box = new Box(data.range.x_range,data.range.y_range)
-     const res = logistic(dataMat1,labels)
      const newDrawTool = new NewDrawTool(drawTool,box)
-     const drawPic = (newDrawTool,data,weights) => {
-         newDrawTool.drawLineByFunction(data.min_x,data.max_x,weights.arr,'#C6E579')
+     const drawPic = (newDrawTool,data) => {
          for(let i=0;i<data.n;i++){
            let obj = data.getDot(i)
-           let label = obj.label
            let color = "#FCCE10"
-           if(label == 0){
-               color = "#26C0C0"
-           }
-           newDrawTool.drawCycle(new Cycle(obj.loc[0],obj.loc[1],2.5),color) 
+           newDrawTool.drawCycle(new Cycle(obj[0],obj[1],2.5),color) 
          }
      }
-     let index = 0
-     setInterval(()=>{
-        newDrawTool.clear()
-        newDrawTool.initCanvas()
-        if(index<res.length-1){
-          index++
-        }
-        drawPic(newDrawTool,data,res[index])
-       
-     },100);
+     drawPic(newDrawTool,data)
 </script>
 </html>
