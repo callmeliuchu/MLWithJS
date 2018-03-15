@@ -2,11 +2,11 @@
 <html>
 <head>
 	<title></title>
+	<script type="text/javascript" src="./regression.js"></script>
 </head>
 <body>
 <canvas id="canvas"></canvas>
 </body>
-<script type="text/javascript" src="./logistic.js"></script>
 <script type="text/javascript">
     function getRandColor(){
        var colorList = [
@@ -134,7 +134,7 @@
             this.drawLine(p1,p2);
         }
         cal_y(weights,x){
-            return -(weights[1]/weights[2])*x -(weights[0]/weights[2])
+            return weights[0] + weights[1]*x
         }
         clear(){
             this.drawTool.clear()
@@ -147,37 +147,27 @@
      		this.height = height
      	}
      	centerLocation(){
-     		return {x:this.width/2,y:this.height/2}
+     		return {x:this.width/4,y:this.height/1.2}
      	}
      }
-     const canvas = document.getElementById('canvas')
-     const ctx = canvas.getContext("2d")
-     drawTool = new DrawTool(canvas,ctx)
-     drawTool.init(1200,800)
-     const data = new TwoDData(dataMat)
-     const box = new Box(data.range.x_range,data.range.y_range)
-     const res = logistic(dataMat1,labels)
-     const newDrawTool = new NewDrawTool(drawTool,box)
+     const getNewTool = (data) => {
+	     const canvas = document.getElementById('canvas')
+	     const ctx = canvas.getContext("2d")
+	     drawTool = new DrawTool(canvas,ctx)
+	     drawTool.init(800,1000)
+	     const box = new Box(data.range.x_range,data.range.y_range)
+	     return new NewDrawTool(drawTool,box)     	
+     }
      const drawPic = (newDrawTool,data,weights) => {
-         newDrawTool.drawLineByFunction(data.min_x,data.max_x,weights.arr,'#C6E579')
+         newDrawTool.drawLineByFunction(data.min_x,data.max_x,weights,'#C6E579')
          for(let i=0;i<data.n;i++){
            let obj = data.getDot(i)
-           let label = obj.label
-           let color = "#FCCE10"
-           if(label == 0){
-               color = "#26C0C0"
-           }
-           newDrawTool.drawCycle(new Cycle(obj.loc[0],obj.loc[1],2.5),color) 
+           newDrawTool.drawCycle(new Cycle(obj.loc[0],obj.loc[1],2.5),"#FCCE10") 
          }
      }
-     let index = 0
-     setInterval(()=>{
-        newDrawTool.clear()
-        newDrawTool.initCanvas()
-        if(index<res.length-1){
-          index++
-        }
-        drawPic(newDrawTool,data,res[index])
-     },100);
+     let data = new TwoDData(dataMat)
+     let newTool = getNewTool(data)
+     // newTool.drawCycle(new Cycle(0,0,5));
+     drawPic(newTool,data,weights)
 </script>
 </html>
