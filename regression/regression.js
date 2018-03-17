@@ -123,23 +123,62 @@ const calMatInverse = (dataMat) =>{
 	return retMat
 }
 
+const shapeOfMat = (dataMat) => {
+	let m = dataMat.length
+	let n = dataMat[0].length
+	return [m,n]
+}
+
 
 const multiplyMats = (mat1,mat2) => {
+	let [m,n] = shapeOfMat(mat1)
+	let [n1,m1] = shapeOfMat(mat2)
+	if(n1 != n || m1 != m){
+		console.error('cant multiply')
+		return
+	}
 	let retMat = []
-	let n = mat1.length
-	for(let i=0;i<n;i++){
+	for(let i=0;i<m;i++){
 		let tmpArr = []
-	    for(let k=0;k<n;k++){
-	    	let sum = 0;
+		for(let k=0;k<m;k++){
+			let sum = 0
 			for(let j=0;j<n;j++){
-			   sum += mat1[i][j]*mat2[j][k];
-		    } 
-		tmpArr.push(sum)  	
-	    }
-	    retMat.push(tmpArr)
+				sum = sum + mat1[i][j]*mat2[j][k]
+			}
+			tmpArr.push(sum)
+		}
+		retMat.push(tmpArr)
 	}
 	return retMat
 }
+
+const initMat = (m,n,val) => {
+	let retMat = []
+	for(let i=0;i<m;i++){
+		let tmpArr = []
+		for(let j=0;j<n;j++){
+			tmpArr.push(val)
+		}
+		retMat.push(tmpArr)
+	}
+	return  retMat
+}
+
+
+
+const TOfMat = (mat) => {
+	let [m,n] = shapeOfMat(mat)
+	let retMat = initMat(n,m,0)
+	for(let j=0;j<m;j++){
+		for(let i=0;i<n;i++){
+			retMat[i][j] = mat[j][i]
+		}
+	}
+	return retMat
+}
+
+
+
 let aMat = [[1.118769136871939, 8.999197059350594, 4.469326316860491, 2.498321026715548], 
             [9.911648562666777, 4.338381130928032, 4.042082636911127, 5.229533023992568], 
             [9.811308821018125, 9.201414826330574, 9.855409018411338, 5.821588676103498], 
@@ -159,13 +198,25 @@ let inverse =[ [ -0.5256523685542962,-0.35371833345616455,1.2477083508950606,-1.
 // let res = calMatInverse(aMat)
 // let y = multiplyMats(aMat,res)
 // print(y)
-vec1 = [1.118769136871939, 8.999197059350594, 4.469326316860491, 2.498321026715548]
-vec2 =  [ -0.5256523685542962,-0.12285078703732974,-0.019700439868012686, 1.113423676428106]
-let sum = 0
-for(let i=0;i<4;i++){
-	sum += vec1[i]*vec2[i]
-}
-print(sum)
-
-// let res = multiplyMats(aMat,inverse)
+// vec1 = [1.118769136871939, 8.999197059350594, 4.469326316860491, 2.498321026715548]
+// vec2 =  [ -0.5256523685542962,-0.12285078703732974,-0.019700439868012686, 1.113423676428106]
+// let sum = 0
+// for(let i=0;i<4;i++){
+// 	sum += vec1[i]*vec2[i]
+// }
+// print(sum)
+let res = multiplyMats(aMat,inverse)
+print(res)
+print(TOfMat(res))
+// print(res)
+// for(let i=0;i<res.length;i++){
+// 	for(let j=0;j<res[i].length;j++){
+// 		if(Math.abs(res[i][j]) < 0.00001){
+// 			res[i][j] = 0
+// 		}
+// 		if(Math.abs(1-res[i][j]) < 0.00001){
+// 			res[i][j] = 1
+// 		}
+// 	}
+// }
 // print(res)
